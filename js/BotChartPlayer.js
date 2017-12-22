@@ -1,13 +1,20 @@
 ﻿// BotChartPlayer.js
+var BOT_CHART_ENUM = {
+    ExchangeRateDaily: 1,
+    LoanRate: 2
+};
+
 function BotChartPlayer(opts) {
-    opts = opts || {},
-    opts.elementID = opts.elementID || 'chart',
-    opts.width = opts.width || 1000,
-    opts.height = opts.height || 450,
-    opts.dateFormat = opts.dateFormat || '%Y-%m-%d',
-    opts.x_column = opts.x_column || 'date',
-    opts.y_column = opts.y_column || 'value',
-    opts.uri = opts.uri || 'https://iapi.bot.or.th/Stat/Stat-ExchangeRate/DAILY_AVG_EXG_RATE_V1';
+        opts = opts || {},
+        opts.elementID = opts.elementID || 'chart',
+        opts.width = opts.width || 1000,
+        opts.height = opts.height || 450,
+        opts.dateFormat = opts.dateFormat || '%Y-%m-%d',
+        opts.x_column = opts.x_column || 'date',
+        opts.y_column = opts.y_column || 'value',
+        opts.uri = opts.uri || 'https://iapi.bot.or.th/Stat/Stat-ExchangeRate/DAILY_AVG_EXG_RATE_V1',
+        opts.BOT_CHART_ENUM = opts.BOT_CHART_ENUM || BOT_CHART_ENUM.ExchangeRateDaily
+    ;
 
     var dataSet = {};
 
@@ -77,17 +84,11 @@ function BotChartPlayer(opts) {
             .attr("d", line);
     }
 
-    var pad = function (data, size) {
-        var s = String(data);
-        while (s.length < (size || 2)) { s = "0" + s; }
-        return s;
-    }
-
     return {
         play: function (year, month) {
             var d = new Date(year, month, 0);
 
-            var period = year + '-' + pad(parseInt(month), 2),
+            var period = year + '-' + parseInt(month).pad(2),
                 criteria = "start_period=" + period + "-01&end_period=" + period + "-" + d.getDate() + "&currency=USD";
 
             if (dataSet[period] == undefined) {
@@ -102,7 +103,7 @@ function BotChartPlayer(opts) {
                                 display(dataSet[period]);
                             }
                         }
-                    })
+                    });
             } else {
                 display(dataSet[period]);
             }
