@@ -31,6 +31,8 @@
     </div>
     <script>
         $(function () {
+            var x_column = "bank_name_th", y_column = "mlr";
+
             var date_format = d3.timeParse("%d/%m/%Y"),
                 api_date_format = d3.timeFormat("%Y-%m-%d"),
                 display_date_format = d3.timeFormat("%d/%m/%Y");
@@ -77,14 +79,14 @@
                         if (result.success) {
 
                             var data = result.data.data_detail.sort(function (a, b) {
-                                return (+a.mlr > +b.mlr) ? 1 : -1;
+                                return (+a[y_column] > +b[y_column]) ? 1 : -1;
                             });
 
                             var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
                                 y = d3.scaleLinear().rangeRound([height, 0]);
 
-                            x.domain(data.map(function (d) { return d.bank_name_th; }));
-                            y.domain([0, d3.max(data, function (d) { return +d.mlr; })]);
+                            x.domain(data.map(function (d) { return d[x_column]; }));
+                            y.domain([0, d3.max(data, function (d) { return +d[y_column]; })]);
 
                             g.select(".axis.axis--x")
                                 .call(d3.axisBottom(x))
@@ -113,10 +115,10 @@
                             bars.enter()
                                 .append("rect")
                                 .attr("class", "bar")
-                                .attr("x", function (d) { return x(d.bank_name_th); })
-                                .attr("y", function (d) { return y(+d.mlr); })
+                                .attr("x", function (d) { return x(d[x_column]); })
+                                .attr("y", function (d) { return y(+d[y_column]); })
                                 .attr("width", x.bandwidth())
-                                .attr("height", function (d) { return height - y(+d.mlr); });
+                                .attr("height", function (d) { return height - y(+d[y_column]); });
 
                             var legend = g_bar.selectAll("text.legend")
                                 .remove()
@@ -126,9 +128,9 @@
                             legend.enter()
                                 .append("text")
                                 .attr("class", "legend")
-                                .attr("x", function (d) { return x(d.bank_name_th) + 1; })
-                                .attr("y", function (d) { return y(+d.mlr) + 10; })
-                                .text(function (d) { return +d.mlr; });
+                                .attr("x", function (d) { return x(d[x_column]) + 1; })
+                                .attr("y", function (d) { return y(+d[y_column]) + 10; })
+                                .text(function (d) { return +d[y_column]; });
                         }
                     });
             }
